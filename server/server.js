@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  'https://event-platform-7596mmtcl-narens-projects-786a5bdd.vercel.app/',
+  'https://event-platform-7596mmtcl-narens-projects-786a5bdd.vercel.app',
   process.env.CLIENT_URL
 ].filter(Boolean);
 
