@@ -7,7 +7,7 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
     email: '',
     password: ''
   });
-  
+
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,12 +33,12 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
-    
+
     // Clear API error when user makes changes
     if (apiError) setApiError('');
   };
@@ -46,7 +46,7 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const newErrors = {
       email: validateEmail(formData.email),
@@ -77,21 +77,27 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
 
       // Store token in localStorage
       localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify({
+      const userData = {
         _id: data.data._id,
         name: data.data.name,
         email: data.data.email
-      }));
+      };
+      console.log(userData);
+      console.log(JSON.stringify(userData));
+      localStorage.setItem('user1', JSON.stringify(userData));
+
+      // Dispatch custom event to notify auth state change
+      window.dispatchEvent(new Event('auth-storage-change'));
 
       // Show success message
       setSuccessMessage('Login successful! Redirecting...');
-      
-      // Call the success callback after a brief delay
+
+      // Call the success callback after a brief delay to allow state to update
       setTimeout(() => {
         if (onLoginSuccess) {
           onLoginSuccess(data.data);
         }
-      }, 1000);
+      }, 500);
 
     } catch (error) {
       setApiError(error.message || 'An error occurred. Please try again.');
@@ -141,9 +147,8 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-3 py-3 border ${
-                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="john@example.com"
                 disabled={isLoading}
                 autoComplete="email"
@@ -169,9 +174,8 @@ const LoginForm = ({ onLoginSuccess, onNavigateToSignup }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-10 py-3 border ${
-                  errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="Enter your password"
                 disabled={isLoading}
                 autoComplete="current-password"

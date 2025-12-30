@@ -3,14 +3,14 @@ import { Eye, EyeOff, Mail, Lock, User, CheckCircle } from 'lucide-react';
 import axiosInstance from '../../api/axios';
 
 const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
-  
+
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,7 +21,7 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
   // Password strength indicator
   const getPasswordStrength = (password) => {
     if (!password) return { strength: 0, text: '', color: '' };
-    
+
     let strength = 0;
     if (password.length >= 8) strength++;
     if (password.length >= 12) strength++;
@@ -75,12 +75,12 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
-    
+
     // Clear API error when user makes changes
     if (apiError) setApiError('');
   };
@@ -88,7 +88,7 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const newErrors = {
       name: validateName(formData.name),
@@ -122,21 +122,25 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
 
       // Store token in localStorage
       localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify({
+      const userData = {
         _id: data.data._id,
         name: data.data.name,
         email: data.data.email
-      }));
+      };
+      localStorage.setItem('user1', JSON.stringify(userData));
+
+      // Dispatch custom event to notify auth state change
+      window.dispatchEvent(new Event('auth-storage-change'));
 
       // Show success message
       setSuccessMessage('Account created successfully! Redirecting...');
-      
-      // Call the success callback after a brief delay
+
+      // Call the success callback after a brief delay to allow state to update
       setTimeout(() => {
         if (onSignupSuccess) {
           onSignupSuccess(data.data);
         }
-      }, 1500);
+      }, 500);
 
     } catch (error) {
       setApiError(error.message || 'An error occurred. Please try again.');
@@ -186,9 +190,8 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-3 py-3 border ${
-                  errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-3 py-3 border ${errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="John Doe"
                 disabled={isLoading}
               />
@@ -213,9 +216,8 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-3 py-3 border ${
-                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="john@example.com"
                 disabled={isLoading}
                 autoComplete="email"
@@ -241,9 +243,8 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-10 py-3 border ${
-                  errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="Enter your password"
                 disabled={isLoading}
                 autoComplete="new-password"
@@ -264,15 +265,14 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
-            
+
             {/* Password Strength Indicator */}
             {formData.password && !errors.password && (
               <div className="mt-2">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-gray-600">Password strength:</span>
-                  <span className={`text-xs font-medium ${
-                    passwordStrength.strength >= 3 ? 'text-green-600' : 'text-gray-600'
-                  }`}>
+                  <span className={`text-xs font-medium ${passwordStrength.strength >= 3 ? 'text-green-600' : 'text-gray-600'
+                    }`}>
                     {passwordStrength.text}
                   </span>
                 </div>
@@ -301,9 +301,8 @@ const SignupForm = ({ onSignupSuccess, onNavigateToLogin }) => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`block w-full pl-10 pr-10 py-3 border ${
-                  errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
-                } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
+                className={`block w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                  } rounded-lg focus:outline-none focus:ring-2 transition-colors`}
                 placeholder="Confirm your password"
                 disabled={isLoading}
                 autoComplete="new-password"

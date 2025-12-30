@@ -67,7 +67,10 @@ const Navbar = ({ user, onLogout }) => {
                     <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
                       <FiUser className="text-indigo-600" />
                     </div>
-                    <span className="text-gray-700 font-medium">{user.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-gray-700 font-medium text-sm">{user.name}</span>
+                      <span className="text-gray-500 text-xs">{user.email}</span>
+                    </div>
                   </div>
 
                   <button
@@ -143,7 +146,10 @@ const Navbar = ({ user, onLogout }) => {
                       <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
                         <FiUser className="text-indigo-600" />
                       </div>
-                      <span className="text-gray-700 font-medium">{user.name}</span>
+                      <div className="flex flex-col">
+                        <span className="text-gray-700 font-medium text-sm">{user.name}</span>
+                        <span className="text-gray-500 text-xs">{user.email}</span>
+                      </div>
                     </div>
 
                     <button
