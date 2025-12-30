@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useEvents } from '../hooks/useEvents';
 import EventDetailsComponent from '../components/events/EventDetails';
 import DeleteConfirmModal from '../components/events/DeleteConfirmModal';
 import axiosInstance from '../api/axios';
@@ -9,7 +8,6 @@ const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const { deleteEvent } = useEvents(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
 
@@ -46,7 +44,8 @@ const EventDetails = () => {
       setShowDeleteModal(false);
       navigate('/my-events');
     } catch (error) {
-      throw error;
+      console.error('Failed to delete event:', error);
+      setShowDeleteModal(false);
     }
   };
 
