@@ -33,11 +33,12 @@ const EventDetails = ({
   const [isRSVPLoading, setIsRSVPLoading] = useState(false);
 
   useEffect(() => {
-    if (eventId) {
-      fetchEventDetails();
-      fetchAttendees();
-    }
+    if (!eventId) return;   // ⛔ STOP execution if eventId missing
+
+    fetchEventDetails();
+    fetchAttendees();
   }, [eventId]);
+
 
   useEffect(() => {
     if (attendees.length > 0 && userId) {
@@ -101,8 +102,10 @@ const EventDetails = ({
       setHasRSVPd(!hasRSVPd);
 
       // Refresh event details and attendees
-      await fetchEventDetails();
-      await fetchAttendees();
+      if (eventId) {
+        await fetchEventDetails();
+        await fetchAttendees();
+      }
 
       if (onRSVP) {
         onRSVP();
